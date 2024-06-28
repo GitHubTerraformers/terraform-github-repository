@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.1](https://github.com/vmvarela/terraform-github-repository/compare/v0.1.0...v0.1.1) (2024-06-28)
+
+
+### Bug Fixes
+
+* **ci:** test GITHUB_TOKEN ([8f67333](https://github.com/vmvarela/terraform-github-repository/commit/8f6733340f460e3d82fa9191bfee2c34b9380b93))
+
 ## 0.1.0 (2024-06-27)
 
 
