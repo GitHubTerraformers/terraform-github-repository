@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.2](https://github.com/vmvarela/terraform-github-repository/compare/v0.1.1...v0.1.2) (2024-07-01)
+
+
+### Miscellaneous Chores
+
+* release 0.1.2 ([d7021d0](https://github.com/vmvarela/terraform-github-repository/commit/d7021d006e77252c992c6c67684bffe59f565975))
+
 ## [0.1.1](https://github.com/vmvarela/terraform-github-repository/compare/v0.1.0...v0.1.1) (2024-06-28)
 
 
