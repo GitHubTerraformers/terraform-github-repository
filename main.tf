@@ -281,28 +281,28 @@ resource "github_repository_file" "this" {
 }
 
 resource "github_actions_repository_access_level" "this" {
-  count        = try(var.actions.access_level, null) != null ? 1 : 0
+  count        = try(var.actions_access_level, null) != null ? 1 : 0
   repository   = github_repository.this.name
-  access_level = var.actions.access_level
+  access_level = var.actions_access_level
 }
 
 resource "github_actions_repository_permissions" "this" {
-  count           = try(var.actions.permissions, null) != null ? 1 : 0
+  count           = try(var.actions_permissions, null) != null ? 1 : 0
   repository      = github_repository.this.name
-  enabled         = var.actions.permissions.enabled
-  allowed_actions = var.actions.permissions.allowed_actions
+  enabled         = var.actions_permissions.enabled
+  allowed_actions = var.actions_permissions.allowed_actions
   dynamic "allowed_actions_config" {
-    for_each = var.actions.permissions.allowed_actions == "selected" ? [1] : []
+    for_each = var.actions_permissions.allowed_actions == "selected" ? [1] : []
     content {
-      github_owned_allowed = try(var.actions.permissions.allowed_actions_config.github_owned_allowed, null)
-      patterns_allowed     = try(var.actions.permissions.allowed_actions_config.patterns_allowed, null)
-      verified_allowed     = try(var.actions.permissions.allowed_actions_config.verified_allowed, null)
+      github_owned_allowed = try(var.actions_permissions.allowed_actions_config.github_owned_allowed, null)
+      patterns_allowed     = try(var.actions_permissions.allowed_actions_config.patterns_allowed, null)
+      verified_allowed     = try(var.actions_permissions.allowed_actions_config.verified_allowed, null)
     }
   }
 }
 
 resource "github_actions_secret" "this" {
-  for_each        = try(var.actions.secrets, null) != null ? var.actions.secrets : {}
+  for_each        = try(var.secrets, null) != null ? var.secrets : {}
   repository      = github_repository.this.name
   secret_name     = each.key
   encrypted_value = each.value.encrypted_value
@@ -310,14 +310,14 @@ resource "github_actions_secret" "this" {
 }
 
 resource "github_actions_variable" "this" {
-  for_each      = try(var.actions.variables, null) != null ? var.actions.variables : {}
+  for_each      = try(var.variables, null) != null ? var.variables : {}
   repository    = github_repository.this.name
   variable_name = each.key
   value         = each.value
 }
 
 resource "github_repository_environment" "this" {
-  for_each            = try(var.actions.environments, null) != null ? var.actions.environments : {}
+  for_each            = try(var.environments, null) != null ? var.environments : {}
   repository          = github_repository.this.name
   environment         = each.key
   wait_timer          = each.value.wait_timer
@@ -340,16 +340,16 @@ resource "github_repository_environment" "this" {
 }
 
 resource "github_actions_environment_secret" "this" {
-  for_each = try(var.actions.environments, null) == null ? {} : {
+  for_each = try(var.environments, null) == null ? {} : {
     for i in flatten([
-      for environment in keys(var.actions.environments) : [
-        for secret in keys(var.actions.environments[environment].secrets) : {
+      for environment in keys(var.environments) : [
+        for secret in keys(var.environments[environment].secrets) : {
           environment     = environment
           secret_name     = secret
-          encrypted_value = var.actions.environments[environment].secrets[secret].encrypted_value
-          plaintext_value = var.actions.environments[environment].secrets[secret].plaintext_value
+          encrypted_value = var.environments[environment].secrets[secret].encrypted_value
+          plaintext_value = var.environments[environment].secrets[secret].plaintext_value
         }
-      ] if var.actions.environments[environment].secrets != null
+      ] if var.environments[environment].secrets != null
     ])
     : format("%s:%s", i.environment, i.secret_name) => i
   }
@@ -361,15 +361,15 @@ resource "github_actions_environment_secret" "this" {
 }
 
 resource "github_actions_environment_variable" "this" {
-  for_each = try(var.actions.environments, null) == null ? {} : {
+  for_each = try(var.environments, null) == null ? {} : {
     for i in flatten([
-      for environment in keys(var.actions.environments) : [
-        for variable in keys(var.actions.environments[environment].variables) : {
+      for environment in keys(var.environments) : [
+        for variable in keys(var.environments[environment].variables) : {
           environment   = environment
           variable_name = variable
-          value         = var.actions.environments[environment].variables[variable]
+          value         = var.environments[environment].variables[variable]
         }
-      ] if var.actions.environments[environment].variables != null
+      ] if var.environments[environment].variables != null
     ])
     : format("%s:%s", i.environment, i.variable_name) => i
   }
@@ -380,14 +380,14 @@ resource "github_actions_environment_variable" "this" {
 }
 
 resource "github_repository_environment_deployment_policy" "this" {
-  for_each = try(var.actions.environments, null) == null ? {} : {
+  for_each = try(var.environments, null) == null ? {} : {
     for i in flatten([
-      for environment in keys(var.actions.environments) : [
-        for branch_pattern in var.actions.environments[environment].deployment_branch_policy.custom_branch_policies : {
+      for environment in keys(var.environments) : [
+        for branch_pattern in var.environments[environment].deployment_branch_policy.custom_branch_policies : {
           environment    = environment
           branch_pattern = branch_pattern
         }
-      ] if var.actions.environments[environment].deployment_branch_policy != null
+      ] if var.environments[environment].deployment_branch_policy != null
     ])
     : format("%s:%s", i.environment, i.branch_pattern) => i
   }

@@ -406,54 +406,71 @@ variable "files" {
   default = null
 }
 
-variable "actions" {
-  description = "(Optional) The list of actions configuration of the repository"
+variable "actions_access_level" {
+  description = "(Optional) The access level for the repository. Must be one of none, user, organization, or enterprise. Default: none"
+  type        = string
+  default     = null
+  validation {
+    condition     = var.actions_access_level == null || can(regex("^none$|^user$|^organization$|^enterprise$", var.actions_access_level))
+    error_message = "Only none, user, organization and enterprise values are allowed"
+  }
+}
+
+variable "actions_permissions" {
+  description = "(Optional) The list of permissions configuration of the repository"
   type = object({
-    access_level = optional(string)
-    permissions = optional(object({
-      enabled         = optional(bool)
-      allowed_actions = optional(string)
-      allowed_actions_config = optional(object({
-        github_owned_allowed = optional(bool)
-        patterns_allowed     = optional(list(string))
-        verified_allowed     = optional(bool)
-      }))
+    enabled         = optional(bool)
+    allowed_actions = optional(string)
+    allowed_actions_config = optional(object({
+      github_owned_allowed = optional(bool)
+      patterns_allowed     = optional(list(string))
+      verified_allowed     = optional(bool)
+    }))
+  })
+  default = null
+  validation {
+    condition     = var.actions_permissions == null || try(var.actions_permissions.allowed_actions, null) == null || can(regex("^all$|^local_only$|^selected$", var.actions_permissions.allowed_actions))
+    error_message = "permissions.allowed_actions: Only all, local_only and selected values are allowed"
+  }
+}
+
+variable "secrets" {
+  description = "(Optional) The list of secrets configuration of the repository (key: secret_name)"
+  type = map(object({
+    encrypted_value = optional(string)
+    plaintext_value = optional(string)
+  }))
+  default = null
+}
+
+variable "variables" {
+  description = "(Optional) The list of variables configuration of the repository (key: variable_name)"
+  type        = map(string)
+  default     = null
+}
+
+variable "environments" {
+  description = "(Optional) The list of environments configuration of the repository (key: environment_name)"
+  type = map(object({
+    wait_timer          = optional(number)
+    can_admins_bypass   = optional(bool)
+    prevent_self_review = optional(bool)
+    reviewers = optional(object({
+      users = optional(map(string), {})
+      teams = optional(map(string), {})
+    }))
+    deployment_branch_policy = optional(object({
+      protected_branches     = optional(bool, false)
+      custom_branch_policies = optional(list(string), [])
     }))
     secrets = optional(map(object({
       encrypted_value = optional(string)
       plaintext_value = optional(string)
     })))
     variables = optional(map(string))
-    environments = optional(map(object({
-      wait_timer          = optional(number)
-      can_admins_bypass   = optional(bool)
-      prevent_self_review = optional(bool)
-      reviewers = optional(object({
-        users = optional(map(string), {})
-        teams = optional(map(string), {})
-      }))
-      deployment_branch_policy = optional(object({
-        protected_branches     = optional(bool, false)
-        custom_branch_policies = optional(list(string), [])
-      }))
-      secrets = optional(map(object({
-        encrypted_value = optional(string)
-        plaintext_value = optional(string)
-      })))
-      variables = optional(map(string))
-    })))
-  })
+  }))
   default = null
-  validation {
-    condition     = var.actions == null || try(var.actions.access_level, null) == null || can(regex("^none$|^user$|^organization$|^enterprise$", var.actions.access_level))
-    error_message = "access_level: Only none, user, organization and enterprise values are allowed"
-  }
-  validation {
-    condition     = var.actions == null || try(var.actions.permissions, null) == null || try(var.actions.permissions.allowed_actions, null) == null || can(regex("^all$|^local_only$|^selected$", var.actions.permissions.allowed_actions))
-    error_message = "permissions.allowed_actions: Only all, local_only and selected values are allowed"
-  }
 }
-
 
 variable "properties" {
   description = "(Optional) The list of properties of the repository (key: property_name)"
