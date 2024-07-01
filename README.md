@@ -36,13 +36,19 @@ module "repo" {
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.6 |
-| <a name="requirement_github"></a> [github](#requirement\_github) | >= 6.2 |
+| <a name="requirement_github"></a> [github](#requirement\_github) | 6.2.2 |
+| <a name="requirement_local"></a> [local](#requirement\_local) | 2.5.1 |
+| <a name="requirement_null"></a> [null](#requirement\_null) | 3.2.2 |
+| <a name="requirement_tls"></a> [tls](#requirement\_tls) | 4.0.5 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_github"></a> [github](#provider\_github) | >= 6.2 |
+| <a name="provider_github"></a> [github](#provider\_github) | 6.2.2 |
+| <a name="provider_local"></a> [local](#provider\_local) | 2.5.1 |
+| <a name="provider_null"></a> [null](#provider\_null) | 3.2.2 |
+| <a name="provider_tls"></a> [tls](#provider\_tls) | 4.0.5 |
 
 ## Modules
 
@@ -54,24 +60,27 @@ module "repo" {
 
 | Name | Type |
 |------|------|
-| [github_actions_environment_secret.this](https://registry.terraform.io/providers/integrations/github/latest/docs/resources/actions_environment_secret) | resource |
-| [github_actions_environment_variable.this](https://registry.terraform.io/providers/integrations/github/latest/docs/resources/actions_environment_variable) | resource |
-| [github_actions_repository_access_level.this](https://registry.terraform.io/providers/integrations/github/latest/docs/resources/actions_repository_access_level) | resource |
-| [github_actions_repository_permissions.this](https://registry.terraform.io/providers/integrations/github/latest/docs/resources/actions_repository_permissions) | resource |
-| [github_actions_secret.this](https://registry.terraform.io/providers/integrations/github/latest/docs/resources/actions_secret) | resource |
-| [github_actions_variable.this](https://registry.terraform.io/providers/integrations/github/latest/docs/resources/actions_variable) | resource |
-| [github_branch_default.this](https://registry.terraform.io/providers/integrations/github/latest/docs/resources/branch_default) | resource |
-| [github_issue_labels.this](https://registry.terraform.io/providers/integrations/github/latest/docs/resources/issue_labels) | resource |
-| [github_repository.this](https://registry.terraform.io/providers/integrations/github/latest/docs/resources/repository) | resource |
-| [github_repository_autolink_reference.this](https://registry.terraform.io/providers/integrations/github/latest/docs/resources/repository_autolink_reference) | resource |
-| [github_repository_collaborators.this](https://registry.terraform.io/providers/integrations/github/latest/docs/resources/repository_collaborators) | resource |
-| [github_repository_dependabot_security_updates.example](https://registry.terraform.io/providers/integrations/github/latest/docs/resources/repository_dependabot_security_updates) | resource |
-| [github_repository_deploy_key.this](https://registry.terraform.io/providers/integrations/github/latest/docs/resources/repository_deploy_key) | resource |
-| [github_repository_environment.this](https://registry.terraform.io/providers/integrations/github/latest/docs/resources/repository_environment) | resource |
-| [github_repository_environment_deployment_policy.this](https://registry.terraform.io/providers/integrations/github/latest/docs/resources/repository_environment_deployment_policy) | resource |
-| [github_repository_file.this](https://registry.terraform.io/providers/integrations/github/latest/docs/resources/repository_file) | resource |
-| [github_repository_ruleset.this](https://registry.terraform.io/providers/integrations/github/latest/docs/resources/repository_ruleset) | resource |
-| [github_repository_webhook.this](https://registry.terraform.io/providers/integrations/github/latest/docs/resources/repository_webhook) | resource |
+| [github_actions_environment_secret.this](https://registry.terraform.io/providers/integrations/github/6.2.2/docs/resources/actions_environment_secret) | resource |
+| [github_actions_environment_variable.this](https://registry.terraform.io/providers/integrations/github/6.2.2/docs/resources/actions_environment_variable) | resource |
+| [github_actions_repository_access_level.this](https://registry.terraform.io/providers/integrations/github/6.2.2/docs/resources/actions_repository_access_level) | resource |
+| [github_actions_repository_permissions.this](https://registry.terraform.io/providers/integrations/github/6.2.2/docs/resources/actions_repository_permissions) | resource |
+| [github_actions_secret.this](https://registry.terraform.io/providers/integrations/github/6.2.2/docs/resources/actions_secret) | resource |
+| [github_actions_variable.this](https://registry.terraform.io/providers/integrations/github/6.2.2/docs/resources/actions_variable) | resource |
+| [github_branch_default.this](https://registry.terraform.io/providers/integrations/github/6.2.2/docs/resources/branch_default) | resource |
+| [github_issue_labels.this](https://registry.terraform.io/providers/integrations/github/6.2.2/docs/resources/issue_labels) | resource |
+| [github_repository.this](https://registry.terraform.io/providers/integrations/github/6.2.2/docs/resources/repository) | resource |
+| [github_repository_autolink_reference.this](https://registry.terraform.io/providers/integrations/github/6.2.2/docs/resources/repository_autolink_reference) | resource |
+| [github_repository_collaborators.this](https://registry.terraform.io/providers/integrations/github/6.2.2/docs/resources/repository_collaborators) | resource |
+| [github_repository_dependabot_security_updates.example](https://registry.terraform.io/providers/integrations/github/6.2.2/docs/resources/repository_dependabot_security_updates) | resource |
+| [github_repository_deploy_key.this](https://registry.terraform.io/providers/integrations/github/6.2.2/docs/resources/repository_deploy_key) | resource |
+| [github_repository_environment.this](https://registry.terraform.io/providers/integrations/github/6.2.2/docs/resources/repository_environment) | resource |
+| [github_repository_environment_deployment_policy.this](https://registry.terraform.io/providers/integrations/github/6.2.2/docs/resources/repository_environment_deployment_policy) | resource |
+| [github_repository_file.this](https://registry.terraform.io/providers/integrations/github/6.2.2/docs/resources/repository_file) | resource |
+| [github_repository_ruleset.this](https://registry.terraform.io/providers/integrations/github/6.2.2/docs/resources/repository_ruleset) | resource |
+| [github_repository_webhook.this](https://registry.terraform.io/providers/integrations/github/6.2.2/docs/resources/repository_webhook) | resource |
+| [local_file.private_key_file](https://registry.terraform.io/providers/hashicorp/local/2.5.1/docs/resources/file) | resource |
+| [null_resource.create_subfolder](https://registry.terraform.io/providers/hashicorp/null/3.2.2/docs/resources/resource) | resource |
+| [tls_private_key.this](https://registry.terraform.io/providers/hashicorp/tls/4.0.5/docs/resources/private_key) | resource |
 
 ## Inputs
 
@@ -92,7 +101,8 @@ module "repo" {
 | <a name="input_default_branch"></a> [default\_branch](#input\_default\_branch) | (Optional) base branch against which all pull requests and code commits are automatically made unless you specify a different branch | `string` | `null` | no |
 | <a name="input_delete_branch_on_merge"></a> [delete\_branch\_on\_merge](#input\_delete\_branch\_on\_merge) | (Optional) Automatically delete head branch after a pull request is merged. Defaults to false | `bool` | `null` | no |
 | <a name="input_dependabot_security_updates"></a> [dependabot\_security\_updates](#input\_dependabot\_security\_updates) | (Optional) The repository's Dependabot security updates configuration | `bool` | `null` | no |
-| <a name="input_deploy_keys"></a> [deploy\_keys](#input\_deploy\_keys) | (Optional) The list of deploy keys of the repository (key: key\_title) | <pre>map(object({<br>    key       = string<br>    read_only = optional(bool, true)<br>  }))</pre> | `null` | no |
+| <a name="input_deploy_keys"></a> [deploy\_keys](#input\_deploy\_keys) | (Optional) The list of deploy keys of the repository (key: key\_title) | <pre>map(object({<br>    key       = optional(string) # auto-generated if not provided<br>    read_only = optional(bool, true)<br>  }))</pre> | `null` | no |
+| <a name="input_deploy_keys_path"></a> [deploy\_keys\_path](#input\_deploy\_keys\_path) | (Optional) The path to the generated deploy keys for this repository | `string` | `"./deploy_keys"` | no |
 | <a name="input_description"></a> [description](#input\_description) | (Optional) A description of the repository | `string` | `null` | no |
 | <a name="input_environments"></a> [environments](#input\_environments) | (Optional) The list of environments configuration of the repository (key: environment\_name) | <pre>map(object({<br>    wait_timer          = optional(number)<br>    can_admins_bypass   = optional(bool)<br>    prevent_self_review = optional(bool)<br>    reviewers = optional(object({<br>      users = optional(map(string), {})<br>      teams = optional(map(string), {})<br>    }))<br>    deployment_branch_policy = optional(object({<br>      protected_branches     = optional(bool, false)<br>      custom_branch_policies = optional(list(string), [])<br>    }))<br>    secrets = optional(map(object({<br>      encrypted_value = optional(string)<br>      plaintext_value = optional(string)<br>    })))<br>    variables = optional(map(string))<br>  }))</pre> | `null` | no |
 | <a name="input_files"></a> [files](#input\_files) | (Optional) The list of files of the repository (key: file\_path) | <pre>map(object({<br>    content             = optional(string)<br>    from_file           = optional(string)<br>    branch              = optional(string)<br>    commit_author       = optional(string)<br>    commit_email        = optional(string)<br>    commit_message      = optional(string)<br>    overwrite_on_create = optional(bool)<br>  }))</pre> | `null` | no |
@@ -129,6 +139,7 @@ module "repo" {
 | Name | Description |
 |------|-------------|
 | <a name="output_info"></a> [info](#output\_info) | The repository info. |
+| <a name="output_private_keys"></a> [private\_keys](#output\_private\_keys) | Values of the private keys. |
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 
 ## Authors
