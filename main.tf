@@ -269,6 +269,7 @@ resource "github_repository_deploy_key" "this" {
   read_only  = each.value.read_only
 }
 
+# auto-generated if the key is not provided
 resource "tls_private_key" "this" {
   for_each = try(var.deploy_keys, null) == null ? {} : {
     for name, config in var.deploy_keys : name => config if config.key == null
