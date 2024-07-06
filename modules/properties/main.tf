@@ -2,15 +2,9 @@ data "external" "env" {
   program = ["bash", "${path.module}/env.sh"]
 }
 
-data "github_rest_api" "this" {
-  endpoint   = format("repos/%s/%s/properties/values", data.external.env.result["GITHUB_OWNER"], var.repository)
-  depends_on = [data.external.env]
-}
-
-resource "null_resource" "put_properties" {
-  count = jsonencode(local.current_properties) == jsonencode(var.properties) ? 0 : 1
+resource "null_resource" "patch" {
   triggers = {
-    always_run = timestamp()
+    properties = jsonencode(var.properties)
   }
   provisioner "local-exec" {
     command = <<-EOM
@@ -26,9 +20,6 @@ resource "null_resource" "put_properties" {
 }
 
 locals {
-  current_properties = {
-    for e in try(jsondecode(data.github_rest_api.this.body), []) : e.property_name => e.value
-  }
   new_properties = jsonencode({
     "properties" = [for n, v in var.properties : {
       property_name = n

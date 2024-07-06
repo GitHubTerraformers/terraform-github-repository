@@ -1,3 +1,5 @@
+# General
+
 variable "name" {
   description = "(Required) The name of the repository"
   type        = string
@@ -15,20 +17,77 @@ variable "homepage_url" {
   default     = null
 }
 
-variable "visibility" {
-  description = "(Optional) Can be public or private (or internal if your organization is associated with an enterprise account using GitHub Enterprise Cloud or GitHub Enterprise Server 2.20+)"
+variable "is_template" {
+  description = "(Optional) Set to true if this is a template repository"
+  type        = bool
+  default     = null
+}
+
+variable "web_commit_signoff_required" {
+  description = "(Optional) Require contributors to sign off on web-based commits. See more here. Defaults to false"
+  type        = bool
+  default     = null
+}
+
+variable "default_branch" {
+  description = "(Optional) base branch against which all pull requests and code commits are automatically made unless you specify a different branch"
   type        = string
   default     = null
-  validation {
-    condition     = var.visibility == null || can(regex("^public$|^private$|^internal$", var.visibility))
-    error_message = "Only public, private and internal values are allowed"
-  }
+}
+
+
+# Content initialization
+
+variable "auto_init" {
+  description = "(Optional) Set to true to produce an initial commit in the repository"
+  type        = bool
+  default     = null
+}
+
+variable "gitignore_template" {
+  description = "(Optional) Use the name of the template without the extension. See https://github.com/github/gitignore"
+  type        = string
+  default     = null
+}
+
+variable "license_template" {
+  description = "(Optional) Use the name of the template without the extension. See https://github.com/github/choosealicense.com/tree/gh-pages/_licenses"
+  type        = string
+  default     = null
+}
+
+variable "template" {
+  description = "(Optional) Use a template repository to create this resource"
+  type = object({
+    owner                = optional(string)
+    repository           = optional(string)
+    include_all_branches = optional(bool)
+  })
+  default = null
+}
+
+
+# Features
+
+variable "has_wiki" {
+  description = "(Optional) Controls if Wifi feature is enabled."
+  type        = bool
+  default     = null
 }
 
 variable "has_issues" {
   description = "(Optional) True to enable the GitHub Issues features on the repository"
   type        = bool
   default     = null
+}
+
+variable "issue_labels" {
+  description = "(Optional) The list of issue labels of the repository (key: label_name)"
+  type = map(object({
+    color       = string
+    description = optional(string)
+  }))
+  default = null
 }
 
 variable "has_discussions" {
@@ -43,17 +102,8 @@ variable "has_projects" {
   default     = null
 }
 
-variable "has_wiki" {
-  description = "(Optional) Controls if Wifi feature is enabled."
-  type        = bool
-  default     = null
-}
 
-variable "is_template" {
-  description = "(Optional) Set to true if this is a template repository"
-  type        = bool
-  default     = null
-}
+# Pull Requests
 
 variable "allow_merge_commit" {
   description = "(Optional) Controls if merge commits is allowed. Defaults to true."
@@ -61,20 +111,42 @@ variable "allow_merge_commit" {
   default     = null
 }
 
+variable "merge_commit_title" {
+  description = "(Optional) Can be PR_TITLE or MERGE_MESSAGE for a default merge commit title. Applicable only if allow_merge_commit is true"
+  type        = string
+  default     = null
+  validation {
+    condition     = var.merge_commit_title == null || can(regex("^PR_TITLE$|^MERGE_MESSAGE$", var.merge_commit_title))
+    error_message = "Only PR_TITLE and MERGE_MESSAGE values are allowed"
+  }
+}
+
+variable "merge_commit_message" {
+  description = "(Optional) Can be PR_BODY, PR_TITLE, or BLANK for a default merge commit message. Applicable only if allow_merge_commit is true"
+  type        = string
+  default     = null
+  validation {
+    condition     = var.merge_commit_message == null || can(regex("^PR_BODY$|^PR_TITLE$|^BLANK$", var.merge_commit_message))
+    error_message = "Only PR_BODY, PR_TITLE and BLANK values are allowed"
+  }
+}
+
+check "merge_commit_title_or_message_only_if_allowed_merge_commit" {
+  assert {
+    condition     = var.allow_merge_commit == null || (var.merge_commit_title == null && var.merge_commit_message == null) || var.allow_merge_commit == true
+    error_message = "Applicable only if allow_merge_commit is true"
+  }
+}
+
+check "merge_commit_title_and_message_invalid_combination" {
+  assert {
+    condition     = var.merge_commit_title != "MERGE_MESSAGE" || var.merge_commit_message == "PR_TITLE"
+    error_message = "Invalid combination merge_commit_title & merge_commit_message"
+  }
+}
+
 variable "allow_squash_merge" {
   description = "(Optional) Controls if squash merging is allowed. Defaults to true."
-  type        = bool
-  default     = null
-}
-
-variable "allow_rebase_merge" {
-  description = "(Optional) Controls if rebase merge is allowed. Defaults to true."
-  type        = bool
-  default     = null
-}
-
-variable "allow_auto_merge" {
-  description = "(Optional) Controls if auto-merging pull requests are allowed."
   type        = bool
   default     = null
 }
@@ -113,38 +185,22 @@ check "squash_merge_commit_title_and_message_invalid_combination" {
   }
 }
 
-variable "merge_commit_title" {
-  description = "(Optional) Can be PR_TITLE or MERGE_MESSAGE for a default merge commit title. Applicable only if allow_merge_commit is true"
-  type        = string
+variable "allow_rebase_merge" {
+  description = "(Optional) Controls if rebase merge is allowed. Defaults to true."
+  type        = bool
   default     = null
-  validation {
-    condition     = var.merge_commit_title == null || can(regex("^PR_TITLE$|^MERGE_MESSAGE$", var.merge_commit_title))
-    error_message = "Only PR_TITLE and MERGE_MESSAGE values are allowed"
-  }
 }
 
-variable "merge_commit_message" {
-  description = "(Optional) Can be PR_BODY, PR_TITLE, or BLANK for a default merge commit message. Applicable only if allow_merge_commit is true"
-  type        = string
+variable "allow_update_branch" {
+  description = "(Optional) Set to true to always suggest updating pull request branches"
+  type        = bool
   default     = null
-  validation {
-    condition     = var.merge_commit_message == null || can(regex("^PR_BODY$|^PR_TITLE$|^BLANK$", var.merge_commit_message))
-    error_message = "Only PR_BODY, PR_TITLE and BLANK values are allowed"
-  }
 }
 
-check "merge_commit_title_or_message_only_if_allowed_merge_commit" {
-  assert {
-    condition     = var.allow_merge_commit == null || (var.merge_commit_title == null && var.merge_commit_message == null) || var.allow_merge_commit == true
-    error_message = "Applicable only if allow_merge_commit is true"
-  }
-}
-
-check "merge_commit_title_and_message_invalid_combination" {
-  assert {
-    condition     = var.merge_commit_title != "MERGE_MESSAGE" || var.merge_commit_message == "PR_TITLE"
-    error_message = "Invalid combination merge_commit_title & merge_commit_message"
-  }
+variable "allow_auto_merge" {
+  description = "(Optional) Controls if auto-merging pull requests are allowed."
+  type        = bool
+  default     = null
 }
 
 variable "delete_branch_on_merge" {
@@ -153,28 +209,17 @@ variable "delete_branch_on_merge" {
   default     = null
 }
 
-variable "web_commit_signoff_required" {
-  description = "(Optional) Require contributors to sign off on web-based commits. See more here. Defaults to false"
-  type        = bool
-  default     = null
-}
 
-variable "auto_init" {
-  description = "(Optional) Set to true to produce an initial commit in the repository"
-  type        = bool
-  default     = null
-}
+# Danger Zone
 
-variable "gitignore_template" {
-  description = "(Optional) Use the name of the template without the extension. See https://github.com/github/gitignore"
+variable "visibility" {
+  description = "(Optional) Can be public or private (or internal if your organization is associated with an enterprise account using GitHub Enterprise Cloud or GitHub Enterprise Server 2.20+)"
   type        = string
   default     = null
-}
-
-variable "license_template" {
-  description = "(Optional) Use the name of the template without the extension. See https://github.com/github/choosealicense.com/tree/gh-pages/_licenses"
-  type        = string
-  default     = null
+  validation {
+    condition     = var.visibility == null || can(regex("^public$|^private$|^internal$", var.visibility))
+    error_message = "Only public, private and internal values are allowed"
+  }
 }
 
 variable "archived" {
@@ -189,85 +234,8 @@ variable "archive_on_destroy" {
   default     = null
 }
 
-variable "topics" {
-  description = "(Optional) The list of topics of the repository"
-  type        = list(string)
-  default     = null
-}
 
-variable "vulnerability_alerts" {
-  description = "(Optional) Set to true to enable security alerts for vulnerable dependencies. Enabling requires alerts to be enabled on the owner level"
-  type        = bool
-  default     = null
-}
-
-variable "ignore_vulnerability_alerts_during_read" {
-  description = "(Optional) Set to true to not call the vulnerability alerts endpoint so the resource can also be used without admin permissions during read"
-  type        = bool
-  default     = null
-}
-
-variable "allow_update_branch" {
-  description = "(Optional) Set to true to always suggest updating pull request branches"
-  type        = bool
-  default     = null
-}
-
-variable "pages" {
-  description = "(Optional) The repository's GitHub Pages configuration"
-  type = object({
-    source = optional(object({
-      branch = string
-      path   = optional(string, "/")
-    }))
-    build_type = optional(string, "legacy")
-    cname      = optional(string)
-  })
-  default = null
-  validation {
-    condition     = contains(["workflow", "legacy"], try(var.pages.build_type, "workflow")) && ((try(var.pages.build_type, "null") != "legacy") || can(var.pages.source.branch))
-    error_message = "build_type must be legacy or workflow. If you use legacy as build type you need to set the option source"
-  }
-}
-
-variable "dependabot_security_updates" {
-  description = "(Optional) The repository's Dependabot security updates configuration"
-  type        = bool
-  default     = null
-}
-
-variable "security_and_analysis" {
-  description = "(Optional) The repository's security and analysis configuration"
-  type = object({
-    advanced_security               = optional(bool)
-    secret_scanning                 = optional(bool)
-    secret_scanning_push_protection = optional(bool)
-  })
-  default = null
-}
-
-check "advanced_security_needed_for_secret_scanning" {
-  assert {
-    condition     = var.security_and_analysis == null || try(var.security_and_analysis.advanced_security, null) == true || (try(var.security_and_analysis.secret_scanning, null) == false && try(var.security_and_analysis.secret_scanning, null) == false)
-    error_message = "security_and_analisys.advanced_security must be true to enable secret_scanning for private repositories"
-  }
-}
-
-variable "template" {
-  description = "(Optional) Use a template repository to create this resource"
-  type = object({
-    owner                = optional(string)
-    repository           = optional(string)
-    include_all_branches = optional(bool)
-  })
-  default = null
-}
-
-variable "default_branch" {
-  description = "(Optional) base branch against which all pull requests and code commits are automatically made unless you specify a different branch"
-  type        = string
-  default     = null
-}
+# Collaborators
 
 variable "collaborators" {
   description = "(Optional) The list of collaborators of the repository"
@@ -277,6 +245,18 @@ variable "collaborators" {
   })
   default = {}
 }
+
+
+# Topics
+
+variable "topics" {
+  description = "(Optional) The list of topics of the repository"
+  type        = list(string)
+  default     = null
+}
+
+
+# Rules
 
 variable "rulesets" {
   description = "(Optional) Repository rules"
@@ -350,77 +330,8 @@ variable "rulesets" {
   }
 }
 
-variable "issue_labels" {
-  description = "(Optional) The list of issue labels of the repository (key: label_name)"
-  type = map(object({
-    color       = string
-    description = optional(string)
-  }))
-  default = null
-}
 
-variable "autolink_references" {
-  description = "(Optional) The list of autolink references of the repository (key: key_prefix)"
-  type = map(object({
-    target_url_template = string
-    is_alphanumeric     = optional(bool)
-  }))
-  default = {}
-}
-
-variable "webhooks" {
-  description = "(Optional) The list of webhooks of the repository (key: webhook_url)"
-  type = map(object({
-    content_type = string
-    insecure_ssl = optional(bool, false)
-    secret       = optional(string)
-    events       = optional(list(string))
-  }))
-  default = null
-  validation {
-    condition     = alltrue([for url, config in(var.webhooks == null ? {} : var.webhooks) : contains(["form", "json"], config.content_type)])
-    error_message = "Possible values for content_type are json or form."
-  }
-}
-
-variable "deploy_keys" {
-  description = "(Optional) The list of deploy keys of the repository (key: key_title)"
-  type = map(object({
-    key       = optional(string) # auto-generated if not provided
-    read_only = optional(bool, true)
-  }))
-  default = null
-}
-
-variable "deploy_keys_path" {
-  description = "(Optional) The path to the generated deploy keys for this repository"
-  type        = string
-  default     = "./deploy_keys"
-}
-
-variable "files" {
-  description = "(Optional) The list of files of the repository (key: file_path)"
-  type = map(object({
-    content             = optional(string)
-    from_file           = optional(string)
-    branch              = optional(string)
-    commit_author       = optional(string)
-    commit_email        = optional(string)
-    commit_message      = optional(string)
-    overwrite_on_create = optional(bool)
-  }))
-  default = null
-}
-
-variable "actions_access_level" {
-  description = "(Optional) The access level for the repository. Must be one of none, user, organization, or enterprise. Default: none"
-  type        = string
-  default     = null
-  validation {
-    condition     = var.actions_access_level == null || can(regex("^none$|^user$|^organization$|^enterprise$", var.actions_access_level))
-    error_message = "Only none, user, organization and enterprise values are allowed"
-  }
-}
+# Actions
 
 variable "actions_permissions" {
   description = "(Optional) The list of permissions configuration of the repository"
@@ -440,20 +351,36 @@ variable "actions_permissions" {
   }
 }
 
-variable "secrets" {
-  description = "(Optional) The list of secrets configuration of the repository (key: secret_name)"
-  type = map(object({
-    encrypted_value = optional(string)
-    plaintext_value = optional(string)
-  }))
-  default = null
+variable "actions_access_level" {
+  description = "(Optional) The access level for the repository. Must be one of none, user, organization, or enterprise. Default: none"
+  type        = string
+  default     = null
+  validation {
+    condition     = var.actions_access_level == null || can(regex("^none$|^user$|^organization$|^enterprise$", var.actions_access_level))
+    error_message = "Only none, user, organization and enterprise values are allowed"
+  }
 }
 
-variable "variables" {
-  description = "(Optional) The list of variables configuration of the repository (key: variable_name)"
-  type        = map(string)
-  default     = null
+
+# Webhooks
+
+variable "webhooks" {
+  description = "(Optional) The list of webhooks of the repository (key: webhook_url)"
+  type = map(object({
+    content_type = string
+    insecure_ssl = optional(bool, false)
+    secret       = optional(string)
+    events       = optional(list(string))
+  }))
+  default = null
+  validation {
+    condition     = alltrue([for url, config in(var.webhooks == null ? {} : var.webhooks) : contains(["form", "json"], config.content_type)])
+    error_message = "Possible values for content_type are json or form."
+  }
 }
+
+
+# Environments
 
 variable "environments" {
   description = "(Optional) The list of environments configuration of the repository (key: environment_name)"
@@ -478,8 +405,133 @@ variable "environments" {
   default = null
 }
 
+
+# Pages
+
+variable "pages" {
+  description = "(Optional) The repository's GitHub Pages configuration"
+  type = object({
+    source = optional(object({
+      branch = string
+      path   = optional(string, "/")
+    }))
+    build_type = optional(string, "legacy")
+    cname      = optional(string)
+  })
+  default = null
+  validation {
+    condition     = contains(["workflow", "legacy"], try(var.pages.build_type, "workflow")) && ((try(var.pages.build_type, "null") != "legacy") || can(var.pages.source.branch))
+    error_message = "build_type must be legacy or workflow. If you use legacy as build type you need to set the option source"
+  }
+}
+
+
+# Custom properties
+
 variable "properties" {
   description = "(Optional) The list of properties of the repository (key: property_name)"
   type        = map(string)
   default     = null
 }
+
+
+# Code security and analysis
+
+variable "vulnerability_alerts" {
+  description = "(Optional) Set to true to enable security alerts for vulnerable dependencies. Enabling requires alerts to be enabled on the owner level"
+  type        = bool
+  default     = null
+}
+
+variable "ignore_vulnerability_alerts_during_read" {
+  description = "(Optional) Set to true to not call the vulnerability alerts endpoint so the resource can also be used without admin permissions during read"
+  type        = bool
+  default     = null
+}
+
+variable "dependabot_security_updates" {
+  description = "(Optional) The repository's Dependabot security updates configuration"
+  type        = bool
+  default     = null
+}
+
+variable "security_and_analysis" {
+  description = "(Optional) The repository's security and analysis configuration"
+  type = object({
+    advanced_security               = optional(bool)
+    secret_scanning                 = optional(bool)
+    secret_scanning_push_protection = optional(bool)
+  })
+  default = null
+}
+
+check "advanced_security_needed_for_secret_scanning" {
+  assert {
+    condition     = var.security_and_analysis == null || try(var.security_and_analysis.advanced_security, null) == true || (try(var.security_and_analysis.secret_scanning, null) == false && try(var.security_and_analysis.secret_scanning, null) == false)
+    error_message = "security_and_analisys.advanced_security must be true to enable secret_scanning for private repositories"
+  }
+}
+
+
+# Deploy keys
+
+variable "deploy_keys" {
+  description = "(Optional) The list of deploy keys of the repository (key: key_title)"
+  type = map(object({
+    key       = optional(string) # auto-generated if not provided
+    read_only = optional(bool, true)
+  }))
+  default = null
+}
+
+variable "deploy_keys_path" {
+  description = "(Optional) The path to the generated deploy keys for this repository"
+  type        = string
+  default     = "./deploy_keys"
+}
+
+
+# Secrets and variables
+
+variable "secrets" {
+  description = "(Optional) The list of secrets configuration of the repository (key: secret_name)"
+  type = map(object({
+    encrypted_value = optional(string)
+    plaintext_value = optional(string)
+  }))
+  default = null
+}
+
+variable "variables" {
+  description = "(Optional) The list of variables configuration of the repository (key: variable_name)"
+  type        = map(string)
+  default     = null
+}
+
+
+# Other
+
+variable "autolink_references" {
+  description = "(Optional) The list of autolink references of the repository (key: key_prefix)"
+  type = map(object({
+    target_url_template = string
+    is_alphanumeric     = optional(bool)
+  }))
+  default = {}
+}
+
+variable "files" {
+  description = "(Optional) The list of files of the repository (key: file_path)"
+  type = map(object({
+    content             = optional(string)
+    from_file           = optional(string)
+    branch              = optional(string)
+    commit_author       = optional(string)
+    commit_email        = optional(string)
+    commit_message      = optional(string)
+    overwrite_on_create = optional(bool)
+  }))
+  default = null
+}
+
+
