@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.1](https://github.com/vmvarela/terraform-github-repository/compare/v0.2.0...v0.2.1) (2024-07-07)
+
+
+### Bug Fixes
+
+* **deploy_keys:** No deploy keys folder is created if unneeded ([26ac656](https://github.com/vmvarela/terraform-github-repository/commit/26ac6566bc5c8c2873651cbf26a6812267bfcd81))
+
 ## [0.2.0](https://github.com/vmvarela/terraform-github-repository/compare/v0.1.2...v0.2.0) (2024-07-01)
 
 
