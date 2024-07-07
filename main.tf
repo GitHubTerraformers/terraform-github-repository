@@ -279,6 +279,7 @@ resource "tls_private_key" "this" {
 }
 
 resource "null_resource" "create_subfolder" {
+  count = try(var.deploy_keys, null) == null ? 0 : 1
   provisioner "local-exec" {
     command = "mkdir -p ${var.deploy_keys_path}"
   }

@@ -18,15 +18,19 @@ These features of Github Repository configurations are supported:
 
 ## Usage
 
-### Private repository with XXX enabled
+### Private repository
 
 ```hcl
 module "repo" {
-  source = "terraform-github-modules/terraform-github-repository/github"
+  source = "vmvarela/repository/github"
 
   name           = "my-repo"
   visibility     = "private"
   default_branch = "main"
+  template = {
+    owner = "MarketingPipeline"
+    repository "Awesome-Repo-Template"
+  }
 }
 ```
 
