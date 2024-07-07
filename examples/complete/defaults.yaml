@@ -1,0 +1,67 @@
+visibility: public
+
+has_issues: true
+
+has_wiki: false
+
+allow_merge_commit: true
+
+merge_commit_title: PR_TITLE
+
+merge_commit_message: BLANK
+
+web_commit_signoff_required: true
+
+license_template: gpl-3.0
+
+allow_update_branch: true
+
+vulnerability_alerts: true
+
+template:
+  owner: vmvarela
+  repository: github-as-code
+
+default_branch: main
+
+rulesets:
+  test:
+    target: branch
+    exclude:
+      - feature/*
+      - hotfix/*
+      - release/*
+    rules:
+      creation: true
+  test-2:
+    target: tag
+    include:
+      - ~ALL
+    rules:
+      deletion: true
+
+webhooks:
+  https://www.mycompany.com/webhook:
+    content_type: json
+    events: [issues]
+
+secrets:
+  MISECRETO:
+    plaintext_value: "123456"
+
+environments:
+  production:
+    deployment_branch_policy:
+      protected_branches: true
+    variables:
+      MYVAR: "myvalue"
+  development:
+    secrets:
+      MYSECRET:
+        plaintext_value: "123456-dev"
+    deployment_branch_policy:
+      custom_branch_policies:
+        - releases/*
+
+properties:
+  test-property: "value-999"
