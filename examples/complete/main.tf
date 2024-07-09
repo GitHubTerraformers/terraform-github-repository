@@ -59,5 +59,3 @@ module "github" {
   dependabot_security_updates             = try(each.value.dependabot_security_updates, try(local.defaults.dependabot_security_updates, null))
   properties                              = try(each.value.properties, try(local.defaults.properties, null))
 }
-
-
