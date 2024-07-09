@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.0.0](https://github.com/GitHubTerraformers/terraform-github-repository/compare/v0.2.1...v1.0.0) (2024-07-09)
+
+
+### ⚠ BREAKING CHANGES
+
+* First release in GitHubTerraformers ([#1](https://github.com/GitHubTerraformers/terraform-github-repository/issues/1))
+
+### Features
+
+* First release in GitHubTerraformers ([#1](https://github.com/GitHubTerraformers/terraform-github-repository/issues/1)) ([6308847](https://github.com/GitHubTerraformers/terraform-github-repository/commit/6308847d9ee1768173b19642660d097e3eeb9bb4))
+
 ## [0.2.1](https://github.com/vmvarela/terraform-github-repository/compare/v0.2.0...v0.2.1) (2024-07-07)
 
 
