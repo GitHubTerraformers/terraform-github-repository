@@ -78,7 +78,7 @@ resource "github_repository" "this" {
 
 }
 
-resource "github_repository_dependabot_security_updates" "example" {
+resource "github_repository_dependabot_security_updates" "this" {
   count      = try(var.dependabot_security_updates, null) != null ? 1 : 0
   repository = github_repository.this.name
   enabled    = var.dependabot_security_updates

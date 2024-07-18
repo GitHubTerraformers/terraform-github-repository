@@ -75,7 +75,7 @@ module "repo" {
 | [github_repository.this](https://registry.terraform.io/providers/integrations/github/6.2.3/docs/resources/repository) | resource |
 | [github_repository_autolink_reference.this](https://registry.terraform.io/providers/integrations/github/6.2.3/docs/resources/repository_autolink_reference) | resource |
 | [github_repository_collaborators.this](https://registry.terraform.io/providers/integrations/github/6.2.3/docs/resources/repository_collaborators) | resource |
-| [github_repository_dependabot_security_updates.example](https://registry.terraform.io/providers/integrations/github/6.2.3/docs/resources/repository_dependabot_security_updates) | resource |
+| [github_repository_dependabot_security_updates.this](https://registry.terraform.io/providers/integrations/github/6.2.3/docs/resources/repository_dependabot_security_updates) | resource |
 | [github_repository_deploy_key.this](https://registry.terraform.io/providers/integrations/github/6.2.3/docs/resources/repository_deploy_key) | resource |
 | [github_repository_environment.this](https://registry.terraform.io/providers/integrations/github/6.2.3/docs/resources/repository_environment) | resource |
 | [github_repository_environment_deployment_policy.this](https://registry.terraform.io/providers/integrations/github/6.2.3/docs/resources/repository_environment_deployment_policy) | resource |
