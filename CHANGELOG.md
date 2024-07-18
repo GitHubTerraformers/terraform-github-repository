@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.1](https://github.com/GitHubTerraformers/terraform-github-repository/compare/v1.0.0...v1.0.1) (2024-07-18)
+
+
+### Bug Fixes
+
+* dependabot_security_updates resource bad name ([1868e1f](https://github.com/GitHubTerraformers/terraform-github-repository/commit/1868e1f5fda6c6f7c23acffb91c02b618731c039))
+
 ## [1.0.0](https://github.com/GitHubTerraformers/terraform-github-repository/compare/v0.2.1...v1.0.0) (2024-07-09)
 
 
