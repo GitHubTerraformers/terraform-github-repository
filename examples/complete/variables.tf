@@ -1,4 +1,4 @@
-variable "owner" {
-  description = "The owner of the repositories"
-  type        = string
-}
+# variable "owner" {
+#   description = "The owner of the repositories"
+#   type        = string
+# }

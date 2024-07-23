@@ -19,8 +19,8 @@ allow_update_branch: true
 vulnerability_alerts: true
 
 template:
-  owner: vmvarela
-  repository: github-as-code
+  owner: MarketingPipeline
+  repository: Awesome-Repo-Template
 
 default_branch: main
 
@@ -62,6 +62,5 @@ environments:
     deployment_branch_policy:
       custom_branch_policies:
         - releases/*
-
-properties:
-  test-property: "value-999"
+# properties:
+#   test-property: "value-999"
