@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.0](https://github.com/GitHubTerraformers/terraform-github-repository/compare/v1.0.1...v1.1.0) (2024-07-23)
+
+
+### Features
+
+* renaming repositories (newname) ([b813cae](https://github.com/GitHubTerraformers/terraform-github-repository/commit/b813cae435020d32a0c4b49cd088df41c8bdb17b))
+
 ## [1.0.1](https://github.com/GitHubTerraformers/terraform-github-repository/compare/v1.0.0...v1.0.1) (2024-07-18)
 
 
