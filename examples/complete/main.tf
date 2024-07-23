@@ -11,7 +11,7 @@ module "github" {
   source   = "../../"
   # source                                  = "github.com/vmvarela/terraform-github-repository?ref=v0.1.0"
   name                                    = each.key
-  newname                                 = try(each.value.newname, null)
+  rename_to                               = try(each.value.rename_to, null)
   deploy_keys_path                        = "./keys_pem"
   description                             = try(each.value.description, try(local.defaults.description, null))
   visibility                              = try(each.value.visibility, try(local.defaults.visibility, null))

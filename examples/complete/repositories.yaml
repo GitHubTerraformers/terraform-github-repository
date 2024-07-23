@@ -23,7 +23,7 @@ repo-2:
     MYVAR: "myvalue"
 
 repo-3:
-  newname: repo-6
+  rename_to: repo-6
   description: "This is a repo-3"
   homepage_url: "https://www.mycompany.com/issues/"
   topics: ["topic-1", "topic-2"]
