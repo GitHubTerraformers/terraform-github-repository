@@ -3,30 +3,30 @@ resource "github_repository" "this" {
   description                             = var.description
   homepage_url                            = var.homepage_url
   visibility                              = var.visibility
-  has_issues                              = var.has_issues
-  has_discussions                         = var.has_discussions
-  has_projects                            = var.has_projects
-  has_wiki                                = var.has_wiki
+  has_issues                              = contains(var.features, "issues")
+  has_discussions                         = contains(var.features, "discussions")
+  has_projects                            = contains(var.features, "projects")
+  has_wiki                                = contains(var.features, "wiki")
   is_template                             = var.is_template
-  allow_merge_commit                      = var.allow_merge_commit
-  allow_squash_merge                      = var.allow_squash_merge
-  allow_rebase_merge                      = var.allow_rebase_merge
-  allow_auto_merge                        = var.allow_auto_merge
-  squash_merge_commit_title               = var.squash_merge_commit_title
-  squash_merge_commit_message             = var.squash_merge_commit_message
-  merge_commit_title                      = var.merge_commit_title
-  merge_commit_message                    = var.merge_commit_message
-  delete_branch_on_merge                  = var.delete_branch_on_merge
+  allow_merge_commit                      = contains(var.pull_requests.allowed_merge_types, "commit")
+  allow_squash_merge                      = contains(var.pull_requests.allowed_merge_types, "squash")
+  allow_rebase_merge                      = contains(var.pull_requests.allowed_merge_types, "rebase")
+  allow_auto_merge                        = lookup(var.pull_requests, "auto_merge", null)
+  allow_update_branch                     = lookup(var.pull_requests, "update_branch", null)
+  delete_branch_on_merge                  = lookup(var.pull_requests, "delete_branch_on_merge", null)
+  squash_merge_commit_title               = try(element(split(":", lookup(var.pull_requests.commit_message, "squash", null)), 0), null)
+  squash_merge_commit_message             = try(element(split(":", lookup(var.pull_requests.commit_message, "squash", null)), 1), null)
+  merge_commit_title                      = try(element(split(":", lookup(var.pull_requests.commit_message, "commit", null)), 0), null)
+  merge_commit_message                    = try(element(split(":", lookup(var.pull_requests.commit_message, "commit", null)), 1), null)
   web_commit_signoff_required             = var.web_commit_signoff_required
-  auto_init                               = var.auto_init
+  auto_init                               = var.auto_init == true || var.default_branch != null
   gitignore_template                      = var.gitignore_template
   license_template                        = var.license_template
   archived                                = var.archived
   archive_on_destroy                      = var.archive_on_destroy
   topics                                  = var.topics
-  vulnerability_alerts                    = var.vulnerability_alerts
-  ignore_vulnerability_alerts_during_read = var.ignore_vulnerability_alerts_during_read
-  allow_update_branch                     = var.allow_update_branch
+  vulnerability_alerts                    = contains(var.security, "dependabot_alerts")
+  ignore_vulnerability_alerts_during_read = contains(var.security, "ignore_vulnerability_alerts_during_read")
 
   dynamic "pages" {
     for_each = var.pages != null ? [1] : []
@@ -44,24 +44,24 @@ resource "github_repository" "this" {
   }
 
   dynamic "security_and_analysis" {
-    for_each = var.security_and_analysis != null ? [1] : []
+    for_each = contains(var.security, "advanced") || contains(var.security, "secret_scanning") ? [1] : []
     content {
       dynamic "advanced_security" {
-        for_each = var.security_and_analysis.advanced_security != null ? [1] : []
+        for_each = contains(var.security, "advanced") ? [1] : [] ? [1] : []
         content {
-          status = var.security_and_analysis.advanced_security ? "enabled" : "disabled"
+          status = "enabled"
         }
       }
       dynamic "secret_scanning" {
-        for_each = var.security_and_analysis.secret_scanning != null ? [1] : []
+        for_each = contains(var.security, "secret_scanning") ? [1] : []
         content {
-          status = var.security_and_analysis.secret_scanning ? "enabled" : "disabled"
+          status = "enabled"
         }
       }
       dynamic "secret_scanning_push_protection" {
-        for_each = var.security_and_analysis.secret_scanning_push_protection != null ? [1] : []
+        for_each = contains(var.security, "secret_scanning_push_protection") ? [1] : [] ? [1] : []
         content {
-          status = var.security_and_analysis.secret_scanning_push_protection ? "enabled" : "disabled"
+          status = "enabled"
         }
       }
     }
@@ -70,18 +70,17 @@ resource "github_repository" "this" {
   dynamic "template" {
     for_each = var.template != null ? [1] : []
     content {
-      owner                = var.template.owner
-      repository           = var.template.repository
-      include_all_branches = var.template.include_all_branches
+      owner      = try(element(split("/", var.template), 0), null)
+      repository = try(element(split("/", var.template), 1), null)
+      # include_all_branches = true
     }
   }
-
 }
 
 resource "github_repository_dependabot_security_updates" "this" {
-  count      = try(var.dependabot_security_updates, null) != null ? 1 : 0
+  count      = contains(var.security, "dependabot_security_updates") ? 1 : 0
   repository = github_repository.this.name
-  enabled    = var.dependabot_security_updates
+  enabled    = true
 }
 
 # The default branch is considered the “base” branch in your repository,

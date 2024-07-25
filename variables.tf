@@ -63,28 +63,18 @@ variable "license_template" {
 }
 
 variable "template" {
-  description = "(Optional) Use a template repository to create this resource"
-  type = object({
-    owner                = optional(string)
-    repository           = optional(string)
-    include_all_branches = optional(bool)
-  })
-  default = null
+  description = "(Optional) Use a template repository to create this resource (owner/repo)"
+  type        = string
+  default     = null
 }
 
 
 # Features
 
-variable "has_wiki" {
-  description = "(Optional) Controls if Wifi feature is enabled."
-  type        = bool
-  default     = null
-}
-
-variable "has_issues" {
-  description = "(Optional) True to enable the GitHub Issues features on the repository"
-  type        = bool
-  default     = null
+variable "features" {
+  description = "(Optional) The features of the repository (wiki, issues, discussions, projects)"
+  type        = list(string)
+  default     = []
 }
 
 variable "issue_labels" {
@@ -96,125 +86,21 @@ variable "issue_labels" {
   default = null
 }
 
-variable "has_discussions" {
-  description = "(Optional) True to enable GitHub Discussions on the repository. Defaults to false"
-  type        = bool
-  default     = null
-}
-
-variable "has_projects" {
-  description = "(Optional) True to enable the GitHub Projects features, but it will return an error if it is disabled at organization level."
-  type        = bool
-  default     = null
-}
-
-
 # Pull Requests
 
-variable "allow_merge_commit" {
-  description = "(Optional) Controls if merge commits is allowed. Defaults to true."
-  type        = bool
-  default     = null
-}
-
-variable "merge_commit_title" {
-  description = "(Optional) Can be PR_TITLE or MERGE_MESSAGE for a default merge commit title. Applicable only if allow_merge_commit is true"
-  type        = string
-  default     = null
-  validation {
-    condition     = var.merge_commit_title == null || can(regex("^PR_TITLE$|^MERGE_MESSAGE$", var.merge_commit_title))
-    error_message = "Only PR_TITLE and MERGE_MESSAGE values are allowed"
+variable "pull_requests" {
+  description = "(Optional) The pull requests configuration of the repository"
+  type = object({
+    allowed_merge_types    = optional(list(string), ["squash", "rebase", "commit"]) # may include "squash", "rebase", "commit"
+    commit_message         = optional(map(string))                                  # key: squash, commit
+    auto_merge             = optional(bool)
+    delete_branch_on_merge = optional(bool)
+    update_branch          = optional(bool)
+  })
+  default = {
+    allowed_merge_types = ["squash", "rebase", "commit"]
   }
 }
-
-variable "merge_commit_message" {
-  description = "(Optional) Can be PR_BODY, PR_TITLE, or BLANK for a default merge commit message. Applicable only if allow_merge_commit is true"
-  type        = string
-  default     = null
-  validation {
-    condition     = var.merge_commit_message == null || can(regex("^PR_BODY$|^PR_TITLE$|^BLANK$", var.merge_commit_message))
-    error_message = "Only PR_BODY, PR_TITLE and BLANK values are allowed"
-  }
-}
-
-check "merge_commit_title_or_message_only_if_allowed_merge_commit" {
-  assert {
-    condition     = var.allow_merge_commit == null || (var.merge_commit_title == null && var.merge_commit_message == null) || var.allow_merge_commit == true
-    error_message = "Applicable only if allow_merge_commit is true"
-  }
-}
-
-check "merge_commit_title_and_message_invalid_combination" {
-  assert {
-    condition     = var.merge_commit_title != "MERGE_MESSAGE" || var.merge_commit_message == "PR_TITLE"
-    error_message = "Invalid combination merge_commit_title & merge_commit_message"
-  }
-}
-
-variable "allow_squash_merge" {
-  description = "(Optional) Controls if squash merging is allowed. Defaults to true."
-  type        = bool
-  default     = null
-}
-
-variable "squash_merge_commit_title" {
-  description = "(Optional) Default squash merge title, can be PR_TITLE or COMMIT_OR_PR_TITLE. Needs allow_squash_merge = true"
-  type        = string
-  default     = null
-  validation {
-    condition     = var.squash_merge_commit_title == null || can(regex("^PR_TITLE$|^COMMIT_OR_PR_TITLE$", var.squash_merge_commit_title))
-    error_message = "Only PR_TITLE and COMMIT_OR_PR_TITLE values are allowed"
-  }
-}
-
-variable "squash_merge_commit_message" {
-  description = "(Optional) Can be PR_BODY, COMMIT_MESSAGES, or BLANK for a default squash merge commit message. Applicable only if allow_squash_merge is true"
-  type        = string
-  default     = null
-  validation {
-    condition     = var.squash_merge_commit_message == null || can(regex("^PR_BODY$|^COMMIT_MESSAGES$|^BLANK$", var.squash_merge_commit_message))
-    error_message = "Only PR_BODY, COMMIT_MESSAGES and BLANK values are allowed"
-  }
-}
-
-check "squash_merge_commit_title_or_message_only_if_allowed_squash_merge" {
-  assert {
-    condition     = var.allow_squash_merge == null || (var.squash_merge_commit_title == null && var.squash_merge_commit_message == null) || var.allow_squash_merge == true
-    error_message = "Applicable only if allow_squash_merge is true"
-  }
-}
-
-check "squash_merge_commit_title_and_message_invalid_combination" {
-  assert {
-    condition     = var.squash_merge_commit_title != "COMMIT_OR_PR_TITLE" || var.squash_merge_commit_message == "COMMIT_MESSAGES"
-    error_message = "Invalid combination squash_merge_commit_title & squash_merge_commit_message"
-  }
-}
-
-variable "allow_rebase_merge" {
-  description = "(Optional) Controls if rebase merge is allowed. Defaults to true."
-  type        = bool
-  default     = null
-}
-
-variable "allow_update_branch" {
-  description = "(Optional) Set to true to always suggest updating pull request branches"
-  type        = bool
-  default     = null
-}
-
-variable "allow_auto_merge" {
-  description = "(Optional) Controls if auto-merging pull requests are allowed."
-  type        = bool
-  default     = null
-}
-
-variable "delete_branch_on_merge" {
-  description = "(Optional) Automatically delete head branch after a pull request is merged. Defaults to false"
-  type        = bool
-  default     = null
-}
-
 
 # Danger Zone
 
@@ -443,41 +329,11 @@ variable "properties" {
 
 # Code security and analysis
 
-variable "vulnerability_alerts" {
-  description = "(Optional) Set to true to enable security alerts for vulnerable dependencies. Enabling requires alerts to be enabled on the owner level"
-  type        = bool
-  default     = null
+variable "security" {
+  description = "(Optional) The list of security features enabled for the repository."
+  type        = list(string)
+  default     = []
 }
-
-variable "ignore_vulnerability_alerts_during_read" {
-  description = "(Optional) Set to true to not call the vulnerability alerts endpoint so the resource can also be used without admin permissions during read"
-  type        = bool
-  default     = null
-}
-
-variable "dependabot_security_updates" {
-  description = "(Optional) The repository's Dependabot security updates configuration"
-  type        = bool
-  default     = null
-}
-
-variable "security_and_analysis" {
-  description = "(Optional) The repository's security and analysis configuration"
-  type = object({
-    advanced_security               = optional(bool)
-    secret_scanning                 = optional(bool)
-    secret_scanning_push_protection = optional(bool)
-  })
-  default = null
-}
-
-check "advanced_security_needed_for_secret_scanning" {
-  assert {
-    condition     = var.security_and_analysis == null || try(var.security_and_analysis.advanced_security, null) == true || (try(var.security_and_analysis.secret_scanning, null) == false && try(var.security_and_analysis.secret_scanning, null) == false)
-    error_message = "security_and_analisys.advanced_security must be true to enable secret_scanning for private repositories"
-  }
-}
-
 
 # Deploy keys
 

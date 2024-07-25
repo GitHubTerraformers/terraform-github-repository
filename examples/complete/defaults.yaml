@@ -1,22 +1,19 @@
-visibility: public
+visibility: private
 
-has_issues: true
+features: [issues]
 
-has_wiki: false
-
-allow_merge_commit: true
-
-merge_commit_title: PR_TITLE
-
-merge_commit_message: BLANK
+pull_requests:
+  # allowed_merge_types: [rebase, squash, commit]
+  update_branch: true
+  commit_message:
+    commit: "PR_TITLE:BLANK"
+    squash: "COMMIT_OR_PR_TITLE:COMMIT_MESSAGES"
 
 web_commit_signoff_required: true
 
 license_template: gpl-3.0
 
-allow_update_branch: true
-
-vulnerability_alerts: true
+security: ["dependabot_alerts"]
 
 template:
   owner: MarketingPipeline

@@ -27,7 +27,7 @@ repo-3:
   description: "This is a repo-3"
   homepage_url: "https://www.mycompany.com/issues/"
   topics: ["topic-1", "topic-2"]
-  vulnerability_alerts: true
+  security: ["dependabot_alerts"]
   pages:
     source:
       branch: main

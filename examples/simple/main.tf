@@ -1,5 +1,4 @@
 provider "github" {
-  owner = var.owner
 }
 
 module "repo" {
@@ -8,8 +7,5 @@ module "repo" {
   name           = "my-repo"
   visibility     = "private"
   default_branch = "main"
-  template = {
-    owner      = "MarketingPipeline"
-    repository = "Awesome-Repo-Template"
-  }
+  template       = "MarketingPipeline/Awesome-Repo-Template"
 }
