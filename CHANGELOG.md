@@ -1,5 +1,16 @@
 # Changelog
 
+## [2.0.0](https://github.com/GitHubTerraformers/terraform-github-repository/compare/v1.1.0...v2.0.0) (2024-07-25)
+
+
+### ⚠ BREAKING CHANGES
+
+* refactoring input variables
+
+### Features
+
+* refactoring input variables ([5841a37](https://github.com/GitHubTerraformers/terraform-github-repository/commit/5841a37b55a14b790af9cfa8392522ac91812e59))
+
 ## [1.1.0](https://github.com/GitHubTerraformers/terraform-github-repository/compare/v1.0.1...v1.1.0) (2024-07-23)
 
 
