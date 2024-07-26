@@ -1,16 +1,20 @@
+locals {
+  allowed_merge_types = try(var.pull_requests["allowed_merge_types"], ["commit", "squash", "rebase"])
+}
+
 resource "github_repository" "this" {
-  name                                    = var.rename_to != null ? var.rename_to : var.name
+  name                                    = var.repository_name != null ? var.repository_name : var.name
   description                             = var.description
-  homepage_url                            = var.homepage_url
+  homepage_url                            = var.url
   visibility                              = var.visibility
   has_issues                              = contains(var.features, "issues")
   has_discussions                         = contains(var.features, "discussions")
   has_projects                            = contains(var.features, "projects")
   has_wiki                                = contains(var.features, "wiki")
   is_template                             = var.is_template
-  allow_merge_commit                      = contains(var.pull_requests.allowed_merge_types, "commit")
-  allow_squash_merge                      = contains(var.pull_requests.allowed_merge_types, "squash")
-  allow_rebase_merge                      = contains(var.pull_requests.allowed_merge_types, "rebase")
+  allow_merge_commit                      = contains(local.allowed_merge_types, "commit")
+  allow_squash_merge                      = contains(local.allowed_merge_types, "squash")
+  allow_rebase_merge                      = contains(local.allowed_merge_types, "rebase")
   allow_auto_merge                        = lookup(var.pull_requests, "auto_merge", null)
   allow_update_branch                     = lookup(var.pull_requests, "update_branch", null)
   delete_branch_on_merge                  = lookup(var.pull_requests, "delete_branch_on_merge", null)
@@ -19,9 +23,7 @@ resource "github_repository" "this" {
   merge_commit_title                      = try(element(split(":", lookup(var.pull_requests.commit_message, "commit", null)), 0), null)
   merge_commit_message                    = try(element(split(":", lookup(var.pull_requests.commit_message, "commit", null)), 1), null)
   web_commit_signoff_required             = var.web_commit_signoff_required
-  auto_init                               = var.auto_init == true || var.default_branch != null
-  gitignore_template                      = var.gitignore_template
-  license_template                        = var.license_template
+  auto_init                               = var.default_branch != null
   archived                                = var.archived
   archive_on_destroy                      = var.archive_on_destroy
   topics                                  = var.topics
@@ -93,19 +95,17 @@ resource "github_branch_default" "this" {
 }
 
 resource "github_repository_collaborators" "this" {
-  count      = try(var.collaborators, null) != null ? 1 : 0
+  count      = (var.teams != null || var.users != null) ? 1 : 0
   repository = github_repository.this.name
-
   dynamic "user" {
-    for_each = try(var.collaborators.users, null) != null ? var.collaborators.users : {}
+    for_each = try(var.users, null) != null ? var.users : {}
     content {
       permission = user.value
       username   = user.key
     }
   }
-
   dynamic "team" {
-    for_each = try(var.collaborators, null) != null ? var.collaborators.teams : {}
+    for_each = try(var.teams, null) != null ? var.teams : {}
     content {
       permission = team.value
       team_id    = team.key
@@ -226,25 +226,24 @@ resource "github_repository_ruleset" "this" {
 }
 
 resource "github_issue_labels" "this" {
-  count      = try(var.issue_labels, null) != null ? 1 : 0
+  count      = try(var.labels, null) != null ? 1 : 0
   repository = github_repository.this.name
 
   dynamic "label" {
-    for_each = var.issue_labels
+    for_each = var.labels
     content {
-      name        = label.key
-      color       = label.value.color
-      description = label.value.description
+      name  = label.key
+      color = label.value
     }
   }
 }
 
 resource "github_repository_autolink_reference" "this" {
-  for_each            = try(var.autolink_references, null) != null ? var.autolink_references : {}
+  for_each            = try(var.autolinks, null) != null ? var.autolinks : {}
   repository          = github_repository.this.name
   key_prefix          = each.key
-  target_url_template = each.value.target_url_template
-  is_alphanumeric     = each.value.is_alphanumeric
+  target_url_template = each.value
+  is_alphanumeric     = true
 }
 
 resource "github_repository_webhook" "this" {
@@ -296,14 +295,15 @@ resource "local_file" "private_key_file" {
 }
 
 resource "github_repository_file" "this" {
-  for_each       = try(var.files, null) != null ? var.files : {}
-  repository     = github_repository.this.name
-  file           = each.key
-  content        = each.value.from_file != null ? file(each.value.from_file) : each.value.content
-  branch         = each.value.branch
-  commit_author  = each.value.commit_author
-  commit_email   = each.value.commit_email
-  commit_message = each.value.commit_message
+  for_each            = try(var.files, null) != null ? var.files : {}
+  repository          = github_repository.this.name
+  file                = each.key
+  content             = each.value.path != null ? file(each.value.path) : each.value.content
+  branch              = each.value.branch
+  commit_author       = each.value.commit != null ? element(split(":", each.value.commit), 0) : null
+  commit_email        = each.value.commit != null ? element(split(":", each.value.commit), 1) : null
+  commit_message      = each.value.commit != null ? element(split(":", each.value.commit), 2) : null
+  overwrite_on_create = each.value.overwrite_on_create
 }
 
 resource "github_actions_repository_access_level" "this" {

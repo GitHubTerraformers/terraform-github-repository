@@ -5,7 +5,7 @@ variable "name" {
   type        = string
 }
 
-variable "rename_to" {
+variable "repository_name" {
   description = "(Optional) New name for this repository (useful for renaming, but not changing the name of the resource)"
   type        = string
   default     = null
@@ -17,7 +17,7 @@ variable "description" {
   default     = null
 }
 
-variable "homepage_url" {
+variable "url" {
   description = "(Optional) URL of a page describing the project"
   type        = string
   default     = null
@@ -41,35 +41,11 @@ variable "default_branch" {
   default     = null
 }
 
-
-# Content initialization
-
-variable "auto_init" {
-  description = "(Optional) Set to true to produce an initial commit in the repository"
-  type        = bool
-  default     = null
-}
-
-variable "gitignore_template" {
-  description = "(Optional) Use the name of the template without the extension. See https://github.com/github/gitignore"
-  type        = string
-  default     = null
-}
-
-variable "license_template" {
-  description = "(Optional) Use the name of the template without the extension. See https://github.com/github/choosealicense.com/tree/gh-pages/_licenses"
-  type        = string
-  default     = null
-}
-
 variable "template" {
   description = "(Optional) Use a template repository to create this resource (owner/repo)"
   type        = string
   default     = null
 }
-
-
-# Features
 
 variable "features" {
   description = "(Optional) The features of the repository (wiki, issues, discussions, projects)"
@@ -77,32 +53,19 @@ variable "features" {
   default     = []
 }
 
-variable "issue_labels" {
+variable "labels" {
   description = "(Optional) The list of issue labels of the repository (key: label_name)"
-  type = map(object({
-    color       = string
-    description = optional(string)
-  }))
-  default = null
+  type        = map(string)
+  default     = null
 }
-
-# Pull Requests
 
 variable "pull_requests" {
   description = "(Optional) The pull requests configuration of the repository"
-  type = object({
-    allowed_merge_types    = optional(list(string), ["squash", "rebase", "commit"]) # may include "squash", "rebase", "commit"
-    commit_message         = optional(map(string))                                  # key: squash, commit
-    auto_merge             = optional(bool)
-    delete_branch_on_merge = optional(bool)
-    update_branch          = optional(bool)
-  })
+  type        = any
   default = {
     allowed_merge_types = ["squash", "rebase", "commit"]
   }
 }
-
-# Danger Zone
 
 variable "visibility" {
   description = "(Optional) Can be public or private (or internal if your organization is associated with an enterprise account using GitHub Enterprise Cloud or GitHub Enterprise Server 2.20+)"
@@ -129,15 +92,17 @@ variable "archive_on_destroy" {
 
 # Collaborators
 
-variable "collaborators" {
-  description = "(Optional) The list of collaborators of the repository"
-  type = object({
-    users = optional(map(string), {})
-    teams = optional(map(string), {})
-  })
-  default = {}
+variable "users" {
+  description = "(Optional) The list of collaborators of the repository (users)"
+  type        = map(string)
+  default     = {}
 }
 
+variable "teams" {
+  description = "(Optional) The list of collaborators of the repository (teams)"
+  type        = map(string)
+  default     = {}
+}
 
 # Topics
 
@@ -373,24 +338,19 @@ variable "variables" {
 
 # Other
 
-variable "autolink_references" {
+variable "autolinks" {
   description = "(Optional) The list of autolink references of the repository (key: key_prefix)"
-  type = map(object({
-    target_url_template = string
-    is_alphanumeric     = optional(bool)
-  }))
-  default = {}
+  type        = map(string)
+  default     = {}
 }
 
 variable "files" {
   description = "(Optional) The list of files of the repository (key: file_path)"
   type = map(object({
     content             = optional(string)
-    from_file           = optional(string)
+    path                = optional(string)
     branch              = optional(string)
-    commit_author       = optional(string)
-    commit_email        = optional(string)
-    commit_message      = optional(string)
+    commit              = optional(string) # format is 'author:email:commit_message'
     overwrite_on_create = optional(bool)
   }))
   default = null

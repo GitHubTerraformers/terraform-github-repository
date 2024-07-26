@@ -1,29 +1,25 @@
-repo-1:
+vmvarela-testing-repo-1:
   description: "This is a repo-1"
 
-repo-2:
+vmvarela-testing-repo-2:
   description: "This is a repo-2"
-  issue_labels:
-    Urgent:
-      color: "ff0000"
-    Critical:
-      color: "ff0000"
-      description: "This is a critical issue"
-  autolink_references:
-    ID-:
-      target_url_template: "https://www.mycompany.com/issues/<num>"
+  labels:
+    Urgent: "ff0000"
+    Critical: "ff0000"
+  autolinks:
+    ID-: "https://www.mycompany.com/issues/<num>"
   files:
     TEST-README.md:
-      from_file: ../../README.md
-  #properties:
-  #  test-property: "value-3"
+      path: ../../README.md
+  properties:
+    test-property: "value-3"
   actions_permissions:
     enabled: false
   variables:
     MYVAR: "myvalue"
 
-repo-3:
-  rename_to: repo-6
+vmvarela-testing-repo-3:
+  rename_to: vmvarela-testing-repo-6
   description: "This is a repo-3"
   homepage_url: "https://www.mycompany.com/issues/"
   topics: ["topic-1", "topic-2"]
@@ -33,9 +29,8 @@ repo-3:
       branch: main
       path: /docs
     build_type: legacy
-  # collaborators:
-  #   teams:
-  #     someteam: pull
+  teams:
+    vmvarela-test-team: pull
   deploy_keys:
     demo:
       read_only: false
