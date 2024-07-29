@@ -1,12 +1,10 @@
-# General
-
 variable "name" {
   description = "(Required) The name of the repository"
   type        = string
 }
 
 variable "repository_name" {
-  description = "(Optional) New name for this repository (useful for renaming, but not changing the name of the resource)"
+  description = "(Optional) New name for this repository (useful for renaming, but not changing the key of the resource)"
   type        = string
   default     = null
 }
@@ -54,7 +52,7 @@ variable "features" {
 }
 
 variable "labels" {
-  description = "(Optional) The list of issue labels of the repository (key: label_name)"
+  description = "(Optional) The list of issue labels of the repository (key: label_name, value: color)"
   type        = map(string)
   default     = null
 }
@@ -64,6 +62,10 @@ variable "pull_requests" {
   type        = any
   default = {
     allowed_merge_types = ["squash", "rebase", "commit"]
+  }
+  validation {
+    condition     = var.pull_requests == null || can(alltrue([for merge_type in var.pull_requests.allowed_merge_types : contains(["squash", "rebase", "commit"], merge_type)]))
+    error_message = "allowed_merge_types: Only squash, rebase and commit values are allowed"
   }
 }
 
@@ -89,9 +91,6 @@ variable "archive_on_destroy" {
   default     = null
 }
 
-
-# Collaborators
-
 variable "users" {
   description = "(Optional) The list of collaborators of the repository (users)"
   type        = map(string)
@@ -104,16 +103,11 @@ variable "teams" {
   default     = {}
 }
 
-# Topics
-
 variable "topics" {
   description = "(Optional) The list of topics of the repository"
   type        = list(string)
   default     = null
 }
-
-
-# Rules
 
 variable "rulesets" {
   description = "(Optional) Repository rules"
@@ -188,8 +182,6 @@ variable "rulesets" {
 }
 
 
-# Actions
-
 variable "actions_permissions" {
   description = "(Optional) The list of permissions configuration of the repository"
   type = object({
@@ -208,14 +200,9 @@ variable "actions_permissions" {
   }
 }
 
-variable "actions_access_level" {
-  description = "(Optional) The access level for the repository. Must be one of none, user, organization, or enterprise. Default: none"
-  type        = string
-  default     = null
-  validation {
-    condition     = var.actions_access_level == null || can(regex("^none$|^user$|^organization$|^enterprise$", var.actions_access_level))
-    error_message = "Only none, user, organization and enterprise values are allowed"
-  }
+variable "reusable_workflows" {
+  description = "(Optional) Reusable workflows enabled for organization. Default: false"
+  type        = bool
 }
 
 

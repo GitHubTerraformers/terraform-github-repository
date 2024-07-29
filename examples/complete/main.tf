@@ -35,7 +35,7 @@ module "github" {
   webhooks                    = try(each.value.webhooks, try(local.defaults.webhooks, null))
   deploy_keys                 = try(each.value.deploy_keys, try(local.defaults.deploy_keys, null))
   files                       = try(each.value.files, try(local.defaults.files, null))
-  actions_access_level        = try(each.value.actions_access_level, try(local.defaults.actions_access_level, null))
+  reusable_workflows          = try(each.value.reusable_workflows, try(local.defaults.reusable_workflows, null))
   actions_permissions         = try(each.value.actions_permissions, try(local.defaults.actions_permissions, null))
   secrets                     = try(each.value.secrets, try(local.defaults.secrets, null))
   variables                   = try(each.value.variables, try(local.defaults.variables, null))
