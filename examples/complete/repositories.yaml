@@ -55,6 +55,7 @@ vmvarela-testing-repo-2:
     test-property: "value-3"
   actions_permissions:
     enabled: false
+  reusable_workflows: true
   variables:
     MYVAR: "myvalue"
 

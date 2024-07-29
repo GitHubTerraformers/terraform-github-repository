@@ -203,6 +203,7 @@ variable "actions_permissions" {
 variable "reusable_workflows" {
   description = "(Optional) Reusable workflows enabled for organization. Default: false"
   type        = bool
+  default     = false
 }
 
 

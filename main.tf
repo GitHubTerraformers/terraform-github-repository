@@ -307,7 +307,7 @@ resource "github_repository_file" "this" {
 }
 
 resource "github_actions_repository_access_level" "this" {
-  count        = try(var.reusable_workflows, false) ? 1 : 0
+  count        = try(var.reusable_workflows, false) != true ? 0 : 1
   repository   = github_repository.this.name
   access_level = "organization"
 }
