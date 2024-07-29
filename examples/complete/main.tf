@@ -2,8 +2,9 @@ provider "github" {
 }
 
 locals {
-  defaults     = yamldecode(file("${path.module}/defaults.yaml"))
-  repositories = yamldecode(file("${path.module}/repositories.yaml"))
+  config       = yamldecode(file("${path.module}/repositories.yaml"))
+  defaults     = local.config["defaults"]
+  repositories = { for key, value in local.config : key => value if key != "defaults" }
 }
 
 module "github" {
@@ -15,9 +16,9 @@ module "github" {
   description                 = try(each.value.description, try(local.defaults.description, null))
   visibility                  = try(each.value.visibility, try(local.defaults.visibility, null))
   url                         = try(each.value.url, try(local.defaults.url, null))
-  features                    = try(each.value.features, try(local.defaults.features, null))
+  features                    = try(each.value.features, try(local.defaults.features, []))
   pull_requests               = try(each.value.pull_requests, try(local.defaults.pull_requests, null))
-  security                    = try(each.value.security, try(local.defaults.security, null))
+  security                    = try(each.value.security, try(local.defaults.security, []))
   is_template                 = try(each.value.is_template, try(local.defaults.is_template, null))
   web_commit_signoff_required = try(each.value.web_commit_signoff_required, try(local.defaults.web_commit_signoff_required, null))
   archived                    = try(each.value.archived, try(local.defaults.archived, null))

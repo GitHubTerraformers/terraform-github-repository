@@ -7,17 +7,17 @@ resource "github_repository" "this" {
   description                             = var.description
   homepage_url                            = var.url
   visibility                              = var.visibility
-  has_issues                              = contains(var.features, "issues")
-  has_discussions                         = contains(var.features, "discussions")
-  has_projects                            = contains(var.features, "projects")
-  has_wiki                                = contains(var.features, "wiki")
+  has_issues                              = try(contains(var.features, "issues"), null)
+  has_discussions                         = try(contains(var.features, "discussions"), null)
+  has_projects                            = try(contains(var.features, "projects"), null)
+  has_wiki                                = try(contains(var.features, "wiki"), null)
   is_template                             = var.is_template
   allow_merge_commit                      = contains(local.allowed_merge_types, "commit")
   allow_squash_merge                      = contains(local.allowed_merge_types, "squash")
   allow_rebase_merge                      = contains(local.allowed_merge_types, "rebase")
-  allow_auto_merge                        = lookup(var.pull_requests, "auto_merge", null)
-  allow_update_branch                     = lookup(var.pull_requests, "update_branch", null)
-  delete_branch_on_merge                  = lookup(var.pull_requests, "delete_branch_on_merge", null)
+  allow_auto_merge                        = try(lookup(var.pull_requests, "auto_merge", null), null)
+  allow_update_branch                     = try(lookup(var.pull_requests, "update_branch", null), null)
+  delete_branch_on_merge                  = try(lookup(var.pull_requests, "delete_branch_on_merge", null), null)
   squash_merge_commit_title               = try(element(split(":", lookup(var.pull_requests.commit_message, "squash", null)), 0), null)
   squash_merge_commit_message             = try(element(split(":", lookup(var.pull_requests.commit_message, "squash", null)), 1), null)
   merge_commit_title                      = try(element(split(":", lookup(var.pull_requests.commit_message, "commit", null)), 0), null)
@@ -27,8 +27,8 @@ resource "github_repository" "this" {
   archived                                = var.archived
   archive_on_destroy                      = var.archive_on_destroy
   topics                                  = var.topics
-  vulnerability_alerts                    = contains(var.security, "dependabot_alerts")
-  ignore_vulnerability_alerts_during_read = contains(var.security, "ignore_vulnerability_alerts_during_read")
+  vulnerability_alerts                    = try(contains(var.security, "dependabot_alerts"), null)
+  ignore_vulnerability_alerts_during_read = try(contains(var.security, "ignore_vulnerability_alerts_during_read"), null)
 
   dynamic "pages" {
     for_each = var.pages != null ? [1] : []
