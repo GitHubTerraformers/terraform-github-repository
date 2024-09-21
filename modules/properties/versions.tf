@@ -4,7 +4,7 @@ terraform {
   required_providers {
     external = {
       source  = "hashicorp/external"
-      version = "2.3.3"
+      version = "2.3.4"
     }
     null = {
       source  = "hashicorp/null"
